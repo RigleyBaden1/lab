@@ -1,0 +1,133 @@
+.data
+result: .word 0  # Reserve space for the result
+
+.text
+.globl main
+main:
+    # Initialize registers
+    li t0, 0      # t0 will store the sum
+    li t1, 1      # t1 will store the current number
+
+loop:
+    add t0, t0, t1  # Add current number to the sum
+    addi t1, t1, 1  # Increment the current number
+    li t2, 101      # Load 101 into t2 for comparison
+    blt t1, t2, loop # If the current number is less than 101, repeat the loop
+
+    # Store the result in memory
+    la t3, result   # Load address of result into t3
+    sw t0, 0(t3)    # Store the sum at the result address
+
+    # Print the result using environment call
+    li a7, 1       # Load the PrintInt syscall number into a7
+    mv a0, t0      # Move the result into a0
+    ecall          # Make the environment call
+
+    # Exit the program
+    li a7, 10      # Load the exit syscall number into a7
+    ecall          # Make the environment call
+#Task 2
+RISC-V Assembly Code:
+assembly
+.data
+array: .space 400  # Reserve space for the array (100 elements * 4 bytes)
+sum: .word 0       # Reserve space for the sum
+average: .word 0   # Reserve space for the average
+
+.text
+.globl main
+main:
+    # Generate 100 random integers and store them in the array
+    li t0, 0        # t0 will be the index
+    la t1, array    # Load the address of the array into t1
+
+generate_loop:
+    li t2, 42       # Load a random integer (for simplicity, let's use 42)
+    sw t2, 0(t1)    # Store the random integer at the current position in the array
+    addi t1, t1, 4  # Move to the next element
+    addi t0, t0, 1  # Increment the index
+    li t3, 100      # Load 100 into t3 for comparison
+    blt t0, t3, generate_loop # If the index is less than 100, repeat the loop
+
+    # Accumulate the numbers in the array
+    li t0, 0        # Reset the index
+    la t1, array    # Load the address of the array into t1
+    li t2, 0        # t2 will store the sum
+
+accumulate_loop:
+    lw t3, 0(t1)    # Load the current element into t3
+    add t2, t2, t3  # Add the element to the sum
+    addi t1, t1, 4  # Move to the next element
+    addi t0, t0, 1  # Increment the index
+    li t4, 100      # Load 100 into t4 for comparison
+    blt t0, t4, accumulate_loop # If the index is less than 100, repeat the loop
+
+    # Store the sum in memory
+    la t5, sum
+    sw t2, 0(t5)
+
+    # Calculate the average
+    li t6, 100      # Load 100 into t6
+    div t7, t2, t6  # Calculate the average t7 = sum / 100
+    la t8, average
+    sw t7, 0(t8)    # Store the average in memory
+
+    # Print the average
+    li a7, 1        # Load the PrintInt syscall number into a7
+    mv a0, t7       # Move the average into a0
+    ecall           # Make the environment call
+
+    # Exit the program
+    li a7, 10       # Load the exit syscall number into a7
+    ecall           # Make the environment call
+
+#Task 3
+RISC-V Assembly Code:
+assembly
+.data
+array: .space 400  # Reserve space for the array (100 elements * 4 bytes)
+max_value: .word 0 # Reserve space for the max value
+
+.text
+.globl main
+main:
+    # Generate 100 random integers and store them in the array
+    li t0, 0        # t0 will be the index
+    la t1, array    # Load the address of the array into t1
+
+generate_loop:
+    li t2, 42       # Load a random integer (for simplicity, let's use 42)
+    sw t2, 0(t1)    # Store the random integer at the current position in the array
+    addi t1, t1, 4  # Move to the next element
+    addi t0, t0, 1  # Increment the index
+    li t3, 100      # Load 100 into t3 for comparison
+    blt t0, t3, generate_loop # If the index is less than 100, repeat the loop
+
+    # Find the maximum value in the array
+    li t0, 0        # Reset the index
+    la t1, array    # Load the address of the array into t1
+    lw t2, 0(t1)    # Initialize max value with the first element
+    addi t1, t1, 4  # Move to the second element
+
+max_loop:
+    lw t3, 0(t1)    # Load the current element into t3
+    blt t3, t2, skip # If the current element is less than max, skip
+    mv t2, t3       # Update max value
+skip:
+    addi t1, t1, 4  # Move to the next element
+    addi t0, t0, 1  # Increment the index
+    li t4, 99       # Load 99 into t4 for comparison (since we already checked the first element)
+    blt t0, t4, max_loop # If the index is less than 99, repeat the loop
+
+    # Store the max value in memory
+    la t5, max_value
+    sw t2, 0(t5)
+
+    # Print the max value
+    li a7, 1        # Load the PrintInt syscall number into a7
+    mv a0, t2       # Move the max value into a0
+    ecall           # Make the environment call
+
+    # Exit the program
+    li a7, 10       # Load the exit syscall number into a7
+    ecall           # Make the environment call
